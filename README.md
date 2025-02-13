@@ -40,19 +40,24 @@ skewM(lam,{0})
 Q lam == skewQ(lam,{0})
 ```
 
-5. Compute the plethysm $Q_\lambda\circ Q_\mu$, where $\lambda=(3,1)$ and $\mu=(4)$:
+5. Compute $Q_{p\lambda}$, where $p=-2$ and $\lambda=(5,2)$:
+```
+Q {-2,5,2}
+```
+
+6. Compute the plethysm $Q_\lambda\circ Q_\mu$, where $\lambda=(3,1)$ and $\mu=(4)$:
 ```
 pleth (Q {3,1}, Q {4})
 ```
 
 ## Power Sum Conversions
 
-6. Write $F\in\mathbb{Q}[q_1,q_2,\ldots]$ as a polynomial in the $p_n$'s, where $F=Q_{(6,5)}+Q_{(3,1)}$:
+7. Write $F\in\mathbb{Q}[q_1,q_2,\ldots]$ as a polynomial in the $p_n$'s, where $F=Q_{(6,5)}+Q_{(3,1)}$:
 ```
 qPolynTOp(Q {6,5} + Q {3,1})
 ```
 
-7. Write $F\in\mathbb{Q}[p_1,p_2,\ldots]$ as a polynomial in the $q_n$'s, where $F=p_1p_3^2$:
+8. Write $F\in\mathbb{Q}[p_1,p_2,\ldots]$ as a polynomial in the $q_n$'s, where $F=p_1p_3^2$:
 ```
 pPolynTOq(p_1*p_3^2)
 ```
