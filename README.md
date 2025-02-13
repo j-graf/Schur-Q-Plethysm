@@ -40,8 +40,9 @@ skewM(lam,{0})
 Q lam == skewQ(lam,{0})
 ```
 
-5. Compute $Q_{p\lambda}$, where $p=-2$ and $\lambda=(5,2)$:
+5. Compute the matrix $M(p\lambda)$ and the function $Q_{p\lambda}$, where $p=-2$ and $\lambda=(5,2)$:
 ```
+M {-2,5,2}
 Q {-2,5,2}
 ```
 
