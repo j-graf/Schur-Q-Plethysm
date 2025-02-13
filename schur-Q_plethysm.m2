@@ -100,8 +100,6 @@ fToLamList = polyn -> (
     ans
     )
 
-fToLamList 0
-
 --returns polyn in p_k basis
 qPolynTOp = polyn -> (
     fqList := fToLamList polyn;
@@ -205,6 +203,13 @@ pleth = (f,g) -> (
                             p_((fTerm#0#i)*(gTerm#0#j))))))))
     )
 
+-- appends 0's to the end of lam
+appendZeros = (lam,num) -> (
+    for i from 0 to #lam+num-1 list (
+        if i < #lam then (lam#i) else (0)
+        )
+    )
+
 --computes Q_(r,s)
 Qtwo = (r,s) -> (
     q_r*q_s + 2*(sum for i from 1 to s list (-1)^i*q_(r+i)*q_(s-i))
@@ -212,15 +217,17 @@ Qtwo = (r,s) -> (
 
 --computes M_lam, where Q_lam=Pf(M_lam)
 M = lam -> (
-    Mlam = map(R^(# lam),R^(# lam),(i,j)->
+    theLam := lam;
+    if #lam % 2 == 1 then (
+        theLam = appendZeros(lam,1);
+        );
+    
+    map(R^(# theLam),R^(# theLam),(i,j)->
         (if i > j then (
-                -Qtwo(lam_j,lam_i)
+                -Qtwo(theLam_j,theLam_i)
                 ) else if i < j then (
-                Qtwo(lam_i,lam_j)
-                ) else (0)));
-    Elam = map(R^(# lam),R^1,(i,j)->q_(lam_i));
-    if (# lam) % 2 == 1 then Mlam = (Mlam|Elam)||(-transpose(Elam)|matrix{{q_0-q_0}});
-    Mlam
+                Qtwo(theLam_i,theLam_j)
+                ) else (0)))
     )
 
 --computes the Pfaffian of the matrix
@@ -233,26 +240,27 @@ pfaff = mat -> (
     )
 
 --computes Q_lam
-Q = lam-> (pfaff M lam)
+Q = lam -> (pfaff M lam)
 
 --computes M_{lam,mu}, where Q_{lam/mu}=Pf(M_{lam,mu})
 skewM = (lam,mu) -> (
-    Mlam = map(R^(# lam),R^(# lam),(i,j)->Qtwo(lam_i,lam_j));
-    Nmu = map(R^(# lam),R^(# mu),(i,j)->q_(lam_i-mu_((# mu) - j - 1)));
-    Extra = map(R^(# lam),R^1,(i,j)->q_(lam_i));
-    if (# lam + # mu) % 2 == 0 then (
-        (Mlam|Nmu)||(-transpose(Nmu)|map(R^(# mu),R^(# mu),(i,j)->q_(-1)))
-        ) else (
-        (Mlam|Extra|Nmu)||((-transpose(Extra)||-transpose(Nmu))|map(R^(1 + # mu),R^(1 + # mu),(i,j)->q_(-1)))
-        )
+    theLam := lam;
+    if (#lam + #mu) % 2 == 1 then (
+        theLam = appendZeros(lam,1);
+        );
+    
+    Mlam = map(R^(# theLam),R^(# theLam),(i,j)->
+        (if i > j then (
+                -Qtwo(theLam_j,theLam_i)
+                ) else if i < j then (
+                Qtwo(theLam_i,theLam_j)
+                ) else (0)));
+    Nmu = map(R^(# theLam),R^(# mu),(i,j)->q_(theLam_i-mu_((# mu) - j - 1)));
+    
+    (Mlam|Nmu)||((-transpose(Nmu))|map(R^(# mu),R^(# mu),(i,j)->q_(-1)))
     )
 
 --computes Q_{lam/mu}
 skewQ = (lam,mu) -> (
-    if toList mu == {0} then (
-        Q lam
-        ) else (
-        pfaff skewM(lam,mu)
-        )
+    pfaff skewM(lam,mu)
     )
-
