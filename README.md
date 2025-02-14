@@ -46,19 +46,26 @@ M {-2,5,2}
 Q {-2,5,2}
 ```
 
-6. Compute the plethysm $Q_\lambda\circ Q_\mu$, where $\lambda=(3,1)$ and $\mu=(4)$:
+6. Verify the example $Q_{(5,3,1)}=(q_2q_1-q_3)Q_{(5,3,2,1)/(5)}-q_1Q_{(5,3,2,1)/(3)}+Q_{(5,3,2,1)/(2)}$:
+```
+Q {5,3,1} == (q_2*q_1-q_3)*(skewQ({5,3,2,1},{5}))-q_1*(skewQ({5,3,2,1},{3}))+(skewQ({5,3,2,1},{2}))
+```
+
+## Plethysm Computations
+
+7. Compute the plethysm $Q_\lambda\circ Q_\mu$, where $\lambda=(3,1)$ and $\mu=(4)$:
 ```
 pleth (Q {3,1}, Q {4})
 ```
 
 ## Power Sum Conversions
 
-7. Write $F\in\mathbb{Q}[q_1,q_2,\ldots]$ as a polynomial in the $p_n$'s, where $F=Q_{(6,5)}+Q_{(3,1)}$:
+8. Write $F\in\mathbb{Q}[q_1,q_2,\ldots]$ as a polynomial in the $p_n$'s, where $F=Q_{(6,5)}+Q_{(3,1)}$:
 ```
 qPolynTOp(Q {6,5} + Q {3,1})
 ```
 
-8. Write $F\in\mathbb{Q}[p_1,p_2,\ldots]$ as a polynomial in the $q_n$'s, where $F=p_1p_3^2$:
+9. Write $F\in\mathbb{Q}[p_1,p_2,\ldots]$ as a polynomial in the $q_n$'s, where $F=p_1p_3^2$:
 ```
 pPolynTOq(p_1*p_3^2)
 ```
