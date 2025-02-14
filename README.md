@@ -53,9 +53,9 @@ Q {5,3,1} == (q_2*q_1-q_3)*(skewQ({5,3,2,1},{5}))-q_1*(skewQ({5,3,2,1},{3}))+(sk
 
 ## Plethysm Computations
 
-7. Compute the plethysm $Q_\lambda\circ Q_\mu$, where $\lambda=(3,1)$ and $\mu=(4)$:
+7. Compute the plethysm $F\circ G$ for $F,G\in\mathbb{Q}[q_1,q_2,\ldots]$, where $F=Q_{(3,1)}$ and $G=q_4$:
 ```
-pleth (Q {3,1}, Q {4})
+pleth(Q {3,1}, Q {4})
 ```
 
 ## Power Sum Conversions
