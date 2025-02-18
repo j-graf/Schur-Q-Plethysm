@@ -32,7 +32,7 @@ M {6,5,0,0}
 Q {6,5} == Q {6,5,0} and Q {6,5} == Q {6,5,0,0}
 ```
 
-4. Compute the matrices $M(\lambda)$ and $M(\lambda,(0))$, and verify that $Q_\lambda=Q_{\lambda/0}$, where $\lambda=(6,5)$:
+4. Compute the matrices $M(\lambda)$ and $M(\lambda,0)$, and verify that $Q_\lambda=Q_{\lambda/0}$, where $\lambda=(6,5)$:
 ```
 lam = {6,5}
 M lam
