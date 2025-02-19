@@ -115,7 +115,7 @@ pmEven = f -> (
 
 --if polyn=2p_1^2p_5-p_2^3, returns {({5,1,1},2),({2,2,2},-1)}
 fToLamList = polyn -> (
-    if polyn == 0 then return ({0,0});
+    if polyn == 0 then return({({0},0)});
 
     ans := {};
     theList := listForm polyn;
