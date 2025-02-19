@@ -3,7 +3,9 @@
 -- computes plethysm recurrence from [GJ24b]
 
 restart
+
 n = 30 --at most ~30
+
 R = QQ[q_(-n)..q_n]--/(ideal(join({q_0-1},for k from -n to -1 list q_k)))
 S = QQ[p_(-n)..p_n]/(ideal(join({p_0-1},for k from -n to -1 list p_k)))
 
@@ -79,6 +81,7 @@ pTOqMap = map(R,S,toList(n:0)|toList(pTOqList));
 --maps any f -> q_i's
 TOq = f -> (
     if (ring f) === (ring q_1) then return(f);
+    if pmEven(f) then print("TOq warning: p_m with m even");
     pTOqMap f
     )
 
@@ -137,6 +140,7 @@ fToLamList = polyn -> (
 
 --computes plethysm f(g) [Loehr-Remmel]
 pleth = (f,g) -> (
+
     fInS := ((ring f) === (ring p_1));
     gInS := ((ring g) === (ring p_1));
     if (fInS xor gInS) and (pmEven(f) or pmEven(g)) then print("warning: p_m with m even");
@@ -173,7 +177,7 @@ Qtwo = (r,s) -> (
     q_r*q_s + 2*(sum for i from 1 to s list (-1)^i*q_(r+i)*q_(s-i))
     )
 
---computes M_lam, where Q_lam=Pf(M_lam)
+--computes M(lam), where Q_lam=Pf(M(lam))
 M = lam -> (
     theLam := lam;
     if #lam % 2 == 1 then (
@@ -200,7 +204,7 @@ pfaff = mat -> (
 --computes Q_lam
 Q = lam -> (pfaff M lam)
 
---computes M_{lam,mu}, where Q_{lam/mu}=Pf(M_{lam,mu})
+--computes M(lam,mu), where Q_{lam/mu}=Pf(M(lam,mu))
 skewM = (lam,mu) -> (
     theLam := lam;
     if (#lam + #mu) % 2 == 1 then (
@@ -222,13 +226,15 @@ skewM = (lam,mu) -> (
 skewQ = (lam,mu) -> (
     pfaff skewM(lam,mu)
     )--returns dot product of A and B
+
+---------- plethysm recurrence formulas
+
+--computes A.B
 dotProd = (A,B) -> (
     if #A != #B then (print("dot product error")) else (
         sum for k from 0 to #A-1 list ((A#k)*(B#k))
         )
     )
-
----------- plethysm recurrence formulas
 
 --adds 1 to last entry of seq, and rolls over if result > theMax
 seqAdd = (seq,theMax) -> (
