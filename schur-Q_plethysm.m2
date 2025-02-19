@@ -10,6 +10,9 @@ S = QQ[p_(-n)..p_n]/(ideal(join({p_0-1},for k from -n to -1 list p_k)))
 --mod out by relations from 8.2' [Macdonald p.251]
 R = R/ideal(join(for m from 1 to n//2 list (-q_(2*m)+(1/2)*(-1)^(m-1)*q_m^2 + sum for r from 1 to (m-1) list (-1)^(r-1)*q_r*q_(2*m-r)),{q_0-1},for i from (-n) to (-1) list q_i))
 
+
+---------- conversions between p_i's and q_i's
+
 --list of odd partitions of numbers 0..m
 oddPartitionList = (
     ans := {{{}}};
@@ -51,8 +54,8 @@ zlam = lam -> (
 --list used for writing q_m in p_k basis [Macdonald p.260]
 qTOpList = Bag for m from 0 to n list (sum for lam in oddPartitionList#m list (zlam lam)^(-1)*2^(#lam)*(plam lam))
 
---returns q_m in p_k basis 
-qTOp = m -> (qTOpList#m)
+--maps q_i->p_j's
+qTOpMap = map(S,R,toList(n:0)|toList(qTOpList));
 
 --list used for writing p_m in q_k basis [Macdonald p.260]
 pTOqList = (
@@ -70,18 +73,26 @@ pTOqList = (
     Bag ans
     )
 
---returns p_m in q_k basis 
-pTOq = m -> (
-    if (even m) and (m > 0) then print("warning: p_m with m even");
-    pTOqList#m
+--maps p_i->q_j's
+pTOqMap = map(R,S,toList(n:0)|toList(pTOqList));
+
+--maps any f -> q_i's
+TOq = f -> (
+    if (ring f) === (ring q_1) then return(f);
+    pTOqMap f
     )
 
---if polyn=2p_1^2p_5-p_2^3, returns {({5,1,1},2),({2,2,2},-1)}
-fToLamList = polyn -> (
-    if polyn == 0 then return ({0,0});
+--maps any f -> p_i's
+TOp = f -> (
+    if (ring f) === (ring p_1) then return(f);
+    qTOpMap f
+    )
 
-    ans := {};
-    theList := listForm polyn;
+--returns true if f has a term with p_m, m even, false otherwise
+pmEven = f -> (
+    if (ring f) === (ring q_1) then return(false);
+    
+    theList := listForm f;
     
     listToLam := termList -> (
         newAns := {};
@@ -94,109 +105,21 @@ fToLamList = polyn -> (
         );
     
     for theTerm in theList do (
-        ans = append(ans,(rsort listToLam(theTerm#0),theTerm#1));
+        if any(listToLam(theTerm#0),even) then return(true);
         );
     
-    ans
+    false
     )
 
---returns polyn in p_k basis
-qPolynTOp = polyn -> (
-    if ((ring polyn) === (ring p_1)) then return(polyn);
-    if ((ring polyn) === ZZ) or ((ring polyn) === QQ) then return(sub(polyn,ring p_1));
-    fqList := fToLamList polyn;
-    sum for theTerm in fqList list (theTerm#1*(product for lamPart in theTerm#0 list qTOp(lamPart)))
-    )
-
---returns polyn in q_k basis
-pPolynTOq = polyn -> (
-    if ((ring polyn) === (ring q_1)) then return(polyn);
-    if ((ring polyn) === ZZ) or ((ring polyn) === QQ) then return(sub(polyn,ring q_1));
-    fpList := fToLamList polyn;
-    sum for theTerm in fpList list (theTerm#1*(product for lamPart in theTerm#0 list pTOq(lamPart)))
-    )
-
--- computes q_n(q_m) [Loehr-Remmel]
-plethNum = (n,m) -> (
-    if n == 0 then return 1;
-    if m == 0 then return 2;
-    
-    pOuter := fToLamList qTOp n;
-    pInner := fToLamList qTOp m;
-    
-    sum for nuTerm in pOuter list (
-        --print(nuTerm);
-        nuTerm#1 *
-        (product for i from 0 to #nuTerm#0-1 list (
-                --print(i);
-                sum for muTerm in pInner list (
-                    --print(muTerm);
-                    muTerm#1 *
-                    product for j from 0 to #muTerm#0-1 list (
-                        --print("nu_i*mu_j="|toString(nuTerm#0#i*muTerm#0#j));
-                        --print(pTOq nuTerm#0#i*muTerm#0#j);
-                        pTOq(nuTerm#0#i*muTerm#0#j))
-                    )
-                )
-            )
-        )
-    )
-
---returns dot product of A and B
-dotProd = (A,B) -> (
-    if #A != #B then (print("dot product error")) else (
-        sum for k from 0 to #A-1 list ((A#k)*(B#k))
-        )
-    )
-
---adds 1 to last entry of seq, and rolls over if result > theMax
-seqAdd = (seq,theMax) -> (
-    ans = new MutableList from seq;
-    for antiIndx from 1 to #seq do (
-        ans#(#ans-antiIndx) = ans#(#ans-antiIndx)+1;
-        if ans#(#ans-antiIndx) > theMax then (
-            ans#(#ans-antiIndx) = 0;
-            if antiIndx == #seq then (break (toSequence for i from 1 to #seq list 0))
-            ) else (
-            break toSequence ans
-            )
-        )
-    )
-
---lists all indices J needed for BK formula
-Jlist = (k,n,m) -> (
-    -- J.d-k >= 0
-    -- n-|J| >= 0
-    ans := {};
-    del := (1..m);
-    ones := toSequence for i from 0 to m-1 list 1;
-    curr := toSequence for i from 0 to m-1 list 0;
-    for i from 1 to (n+1)^m-1 list (
-        curr = seqAdd(curr,n);
-        if (dotProd(curr,del) < k) or (dotProd(curr,ones) > n) then continue;
-        curr
-        )
-    )
-
---computes D_k(q_n(q_m))
-BK = (k,n,m) -> (
-    indexList := Jlist(k,n,m);
-    del := (1..m);
-    ones := toSequence for i from 0 to m-1 list 1;
-    
-    sum for J in indexList list (
-        (-1)^(dotProd(J,del)-k)*q_(dotProd(J,del)-k)*(plethNum(n-dotProd(J,ones),m))*
-        product for s from 1 to m list plethNum(J#(s-1),m-s)
-        )
-    )
-
---computes f(g) [Loehr-Remmel]
+--computes plethysm f(g) [Loehr-Remmel]
 pleth = (f,g) -> (
+    if pmEven(f) or pmEven(g) then print("warning: p_m with m even");
+    
     fInS := ((ring f) === (ring p_1));
     gInS := ((ring g) === (ring p_1));
     
-    fList := fToLamList qPolynTOp f;
-    gList := fToLamList qPolynTOp g;
+    fList := fToLamList TOp f;
+    gList := fToLamList TOp g;
     
     fMaxWeight := max for fTerm in fList list sum fTerm#0;
     gMaxWeight := max for gTerm in gList list sum gTerm#0;
@@ -210,8 +133,10 @@ pleth = (f,g) -> (
                             p_((fTerm#0#i)*(gTerm#0#j))))))));
     
     if fInS or gInS then return(ans);
-    pPolynTOq sub(ans,ring p_1)
+    TOq ans
     )
+
+---------- Pfaffian definition of Schur's Q-functions
 
 -- appends 0's to the end of lam
 appendZeros = (lam,num) -> (
@@ -273,4 +198,52 @@ skewM = (lam,mu) -> (
 --computes Q_{lam/mu}
 skewQ = (lam,mu) -> (
     pfaff skewM(lam,mu)
+    )--returns dot product of A and B
+dotProd = (A,B) -> (
+    if #A != #B then (print("dot product error")) else (
+        sum for k from 0 to #A-1 list ((A#k)*(B#k))
+        )
+    )
+
+---------- plethysm recurrence formulas
+
+--adds 1 to last entry of seq, and rolls over if result > theMax
+seqAdd = (seq,theMax) -> (
+    ans = new MutableList from seq;
+    for antiIndx from 1 to #seq do (
+        ans#(#ans-antiIndx) = ans#(#ans-antiIndx)+1;
+        if ans#(#ans-antiIndx) > theMax then (
+            ans#(#ans-antiIndx) = 0;
+            if antiIndx == #seq then (break (toSequence for i from 1 to #seq list 0))
+            ) else (
+            break toSequence ans
+            )
+        )
+    )
+
+--lists all indices J needed for BK formula
+Jlist = (k,n,m) -> (
+    -- J.d-k >= 0
+    -- n-|J| >= 0
+    ans := {};
+    del := (1..m);
+    ones := toSequence for i from 0 to m-1 list 1;
+    curr := toSequence for i from 0 to m-1 list 0;
+    for i from 1 to (n+1)^m-1 list (
+        curr = seqAdd(curr,n);
+        if (dotProd(curr,del) < k) or (dotProd(curr,ones) > n) then continue;
+        curr
+        )
+    )
+
+--computes D_k(q_n(q_m))
+BK = (k,n,m) -> (
+    indexList := Jlist(k,n,m);
+    del := (1..m);
+    ones := toSequence for i from 0 to m-1 list 1;
+    
+    sum for J in indexList list (
+        (-1)^(dotProd(J,del)-k)*q_(dotProd(J,del)-k)*(pleth(q_(n-dotProd(J,ones)),q_m))*
+        product for s from 1 to m list pleth(q_(J#(s-1)),q_(m-s))
+        )
     )
