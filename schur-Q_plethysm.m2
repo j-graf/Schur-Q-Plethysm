@@ -137,10 +137,9 @@ fToLamList = polyn -> (
 
 --computes plethysm f(g) [Loehr-Remmel]
 pleth = (f,g) -> (
-    if pmEven(f) or pmEven(g) then print("warning: p_m with m even");
-    
     fInS := ((ring f) === (ring p_1));
     gInS := ((ring g) === (ring p_1));
+    if (fInS xor gInS) and (pmEven(f) or pmEven(g)) then print("warning: p_m with m even");
     
     fList := fToLamList TOp f;
     gList := fToLamList TOp g;
