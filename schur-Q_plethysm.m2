@@ -111,6 +111,30 @@ pmEven = f -> (
     false
     )
 
+--if polyn=2p_1^2p_5-p_2^3, returns {({5,1,1},2),({2,2,2},-1)}
+fToLamList = polyn -> (
+    if polyn == 0 then return ({0,0});
+
+    ans := {};
+    theList := listForm polyn;
+
+    listToLam := termList -> (
+        newAns := {};
+        for i from 0 to #termList-1 do (
+            for j from 1 to termList#i do (
+                newAns = append(newAns,i-n);
+                );
+            );
+        newAns
+        );
+
+    for theTerm in theList do (
+        ans = append(ans,(rsort listToLam(theTerm#0),theTerm#1));
+        );
+    
+    ans
+    )
+
 --computes plethysm f(g) [Loehr-Remmel]
 pleth = (f,g) -> (
     if pmEven(f) or pmEven(g) then print("warning: p_m with m even");
