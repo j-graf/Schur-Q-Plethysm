@@ -103,6 +103,7 @@ fToLamList = polyn -> (
 --returns polyn in p_k basis
 qPolynTOp = polyn -> (
     if ((ring polyn) === (ring p_1)) then return(polyn);
+    if ((ring polyn) === ZZ) or ((ring polyn) === QQ) then return(sub(polyn,ring p_1));
     fqList := fToLamList polyn;
     sum for theTerm in fqList list (theTerm#1*(product for lamPart in theTerm#0 list qTOp(lamPart)))
     )
@@ -110,6 +111,7 @@ qPolynTOp = polyn -> (
 --returns polyn in q_k basis
 pPolynTOq = polyn -> (
     if ((ring polyn) === (ring q_1)) then return(polyn);
+    if ((ring polyn) === ZZ) or ((ring polyn) === QQ) then return(sub(polyn,ring q_1));
     fpList := fToLamList polyn;
     sum for theTerm in fpList list (theTerm#1*(product for lamPart in theTerm#0 list pTOq(lamPart)))
     )
@@ -208,7 +210,7 @@ pleth = (f,g) -> (
                             p_((fTerm#0#i)*(gTerm#0#j))))))));
     
     if fInS or gInS then return(ans);
-    pPolynTOq ans
+    pPolynTOq sub(ans,ring p_1)
     )
 
 -- appends 0's to the end of lam
