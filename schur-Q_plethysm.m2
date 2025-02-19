@@ -78,6 +78,7 @@ pTOqMap = map(R,S,toList(n:0)|toList(pTOqList));
 --maps any f -> q_i's
 TOq = f -> (
     if (ring f) === (ring q_1) then return(f);
+    if (ring f) === ZZ or (ring f) === QQ then return(sub(f,ring q_1));
     if pmEven(f) then print("TOq warning: p_m with m even");
     pTOqMap f
     )
@@ -85,6 +86,7 @@ TOq = f -> (
 --maps any f -> p_i's
 TOp = f -> (
     if (ring f) === (ring p_1) then return(f);
+    if (ring f) === ZZ or (ring f) === QQ then return(sub(f,ring p_1));
     qTOpMap f
     )
 
