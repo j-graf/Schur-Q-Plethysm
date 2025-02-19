@@ -3,15 +3,12 @@
 -- computes plethysm recurrence from [GJ24b]
 
 restart
-
 n = 30 --at most ~30
-
 R = QQ[q_(-n)..q_n]--/(ideal(join({q_0-1},for k from -n to -1 list q_k)))
 S = QQ[p_(-n)..p_n]/(ideal(join({p_0-1},for k from -n to -1 list p_k)))
 
 --mod out by relations from 8.2' [Macdonald p.251]
 R = R/ideal(join(for m from 1 to n//2 list (-q_(2*m)+(1/2)*(-1)^(m-1)*q_m^2 + sum for r from 1 to (m-1) list (-1)^(r-1)*q_r*q_(2*m-r)),{q_0-1},for i from (-n) to (-1) list q_i))
-
 
 ---------- conversions between p_i's and q_i's
 
@@ -56,7 +53,7 @@ zlam = lam -> (
 --list used for writing q_m in p_k basis [Macdonald p.260]
 qTOpList = Bag for m from 0 to n list (sum for lam in oddPartitionList#m list (zlam lam)^(-1)*2^(#lam)*(plam lam))
 
---maps q_i->p_j's
+--maps q_i -> p_j's
 qTOpMap = map(S,R,toList(n:0)|toList(qTOpList));
 
 --list used for writing p_m in q_k basis [Macdonald p.260]
@@ -75,7 +72,7 @@ pTOqList = (
     Bag ans
     )
 
---maps p_i->q_j's
+--maps p_i -> q_j's
 pTOqMap = map(R,S,toList(n:0)|toList(pTOqList));
 
 --maps any f -> q_i's
@@ -140,7 +137,6 @@ fToLamList = polyn -> (
 
 --computes plethysm f(g) [Loehr-Remmel]
 pleth = (f,g) -> (
-
     fInS := ((ring f) === (ring p_1));
     gInS := ((ring g) === (ring p_1));
     if (fInS xor gInS) and (pmEven(f) or pmEven(g)) then print("warning: p_m with m even");
@@ -165,7 +161,7 @@ pleth = (f,g) -> (
 
 ---------- Pfaffian definition of Schur's Q-functions
 
--- appends 0's to the end of lam
+--appends 0's to the end of lam
 appendZeros = (lam,num) -> (
     for i from 0 to #lam+num-1 list (
         if i < #lam then (lam#i) else (0)
