@@ -62,10 +62,10 @@ pleth(Q {3,1}, Q {4})
 
 8. Write $F\in\mathbb{Q}[q_1,q_2,\ldots]$ as a polynomial in the $p_n$'s, where $F=Q_{(6,5)}+Q_{(3,1)}$:
 ```
-qPolynTOp(Q {6,5} + Q {3,1})
+TOp(Q {6,5} + Q {3,1})
 ```
 
 9. Write $F\in\mathbb{Q}[p_1,p_2,\ldots]$ as a polynomial in the $q_n$'s, where $F=p_1p_3^2$:
 ```
-pPolynTOq(p_1*p_3^2)
+TOq(p_1*p_3^2)
 ```
