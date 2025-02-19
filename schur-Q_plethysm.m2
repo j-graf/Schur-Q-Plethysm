@@ -102,12 +102,14 @@ fToLamList = polyn -> (
 
 --returns polyn in p_k basis
 qPolynTOp = polyn -> (
+    if ((ring polyn) === (ring p_1)) then return(polyn);
     fqList := fToLamList polyn;
     sum for theTerm in fqList list (theTerm#1*(product for lamPart in theTerm#0 list qTOp(lamPart)))
     )
 
 --returns polyn in q_k basis
 pPolynTOq = polyn -> (
+    if ((ring polyn) === (ring q_1)) then return(polyn);
     fpList := fToLamList polyn;
     sum for theTerm in fpList list (theTerm#1*(product for lamPart in theTerm#0 list pTOq(lamPart)))
     )
@@ -186,8 +188,11 @@ BK = (k,n,m) -> (
         )
     )
 
---computes f(g), where f ang g are polynomials q_k basis [Loehr-Remmel]
+--computes f(g) [Loehr-Remmel]
 pleth = (f,g) -> (
+    fInS := ((ring f) === (ring p_1));
+    gInS := ((ring g) === (ring p_1));
+    
     fList := fToLamList qPolynTOp f;
     gList := fToLamList qPolynTOp g;
     
@@ -196,11 +201,14 @@ pleth = (f,g) -> (
     
     if gMaxWeight*fMaxWeight > n then print("plethysm warning: weight might be too high");
     
-    pPolynTOq sum for fTerm in fList list ((fTerm#1)*(
+    ans := sum for fTerm in fList list ((fTerm#1)*(
             product for i from 0 to #fTerm#0-1 list (
                 sum for gTerm in gList list ((gTerm#1)*(
                         product for j from 0 to #gTerm#0-1 list(
-                            p_((fTerm#0#i)*(gTerm#0#j))))))))
+                            p_((fTerm#0#i)*(gTerm#0#j))))))));
+    
+    if fInS or gInS then return(ans);
+    pPolynTOq ans
     )
 
 -- appends 0's to the end of lam
