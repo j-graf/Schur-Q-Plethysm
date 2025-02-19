@@ -221,7 +221,7 @@ skewM = (lam,mu) -> (
 --computes Q_{lam/mu}
 skewQ = (lam,mu) -> (
     pfaff skewM(lam,mu)
-    )--returns dot product of A and B
+    )
 
 ---------- plethysm recurrence formulas
 
