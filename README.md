@@ -66,8 +66,8 @@ nu = {4,3,2}
 
 for p from 0 to 7 do (
     s = (sum lam)*(p + sum mu) - sum nu;
-    print(decomposeQ(pleth(Q lam,Q {p,2}),doPrint => false));
-    print(select(decomposeQ(pleth(Q lam,Q {p,2}),doPrint => false),i -> i#0 == {s,4,3,2}));
+    print(decomposeQ(pleth(Q lam,Q({p}|mu)),doPrint => false));
+    print(select(decomposeQ(pleth(Q lam,Q ({p}|mu)),doPrint => false),i -> i#0 == ({s}|nu)));
     print("\n");
     )
 ```
@@ -75,13 +75,13 @@ for p from 0 to 7 do (
 9. Verify the plethysm stability of $(Q_{p\lambda}\circ Q_{\mu},Q_{s\nu})$ ($\ell(\mu)>1$), where $\lambda=(1)$, $\mu=(2,1)$, and $\nu=(3,2)$:
 ```
 lam = {1}
-mu = {2,1}
+mu = {2,1} --ell(mu)>1
 nu = {3,2}
 
 for p from 0 to 7 do (
     s = (sum lam + p)*(sum mu) - sum nu;
-    print(decomposeQ(pleth(Q {p,1},Q {2,1}),doPrint => false));
-    print(select(decomposeQ(pleth(Q {p,1},Q {2,1}),doPrint => false),i -> i#0 == {s,3,2}));
+    print(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false));
+    print(select(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false),i -> i#0 == {s}|nu));
     print("\n");
     )
 ```
@@ -89,14 +89,13 @@ for p from 0 to 7 do (
 10. Verify the plethysm non-stability of $(Q_{p\lambda}\circ Q_{\mu},Q_{s\nu})$ ($\ell(\mu)=1$), where $\lambda=(1)$, $\mu=(3)$, and $\nu=(2,1)$:
 ```
 lam = {1}
-mu = {3}
+mu = {3} --ell(mu)=1
 nu = {2,1}
 
 for p from 0 to 7 do (
     s = (sum lam + p)*(sum mu) - sum nu;
-    --print(s);
-    print(decomposeQ(pleth(Q {p,1},Q mu),doPrint => false));
-    print(select(decomposeQ(pleth(Q {p,1},Q mu),doPrint => false),i -> i#0 == {s,2,1}));
+    print(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false));
+    print(select(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false),i -> i#0 == {s}|nu));
     print("\n");
     )
 ```
