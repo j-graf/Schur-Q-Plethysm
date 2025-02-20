@@ -67,7 +67,7 @@ nu = {4,3,2}
 for p from 0 to 7 do (
     s = (sum lam)*(p + sum mu) - sum nu;
     print(decomposeQ(pleth(Q lam,Q({p}|mu)),doPrint => false));
-    print(select(decomposeQ(pleth(Q lam,Q ({p}|mu)),doPrint => false),i -> i#0 == ({s}|nu)));
+    print(decompToTex select(decomposeQ(pleth(Q lam,Q ({p}|mu)),doPrint => false),i -> i#0 == ({s}|nu)));
     print("\n");
     )
 ```
@@ -81,7 +81,7 @@ nu = {3,2}
 for p from 0 to 7 do (
     s = (sum lam + p)*(sum mu) - sum nu;
     print(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false));
-    print(select(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false),i -> i#0 == {s}|nu));
+    print(decompToTex select(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false),i -> i#0 == {s}|nu));
     print("\n");
     )
 ```
@@ -95,7 +95,7 @@ nu = {2,1}
 for p from 0 to 7 do (
     s = (sum lam + p)*(sum mu) - sum nu;
     print(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false));
-    print(select(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false),i -> i#0 == {s}|nu));
+    print(decompToTex select(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false),i -> i#0 == {s}|nu));
     print("\n");
     )
 ```
