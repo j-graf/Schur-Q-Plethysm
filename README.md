@@ -58,6 +58,49 @@ Q {5,3,1} == (q_2*q_1-q_3)*(skewQ({5,3,2,1},{5}))-q_1*(skewQ({5,3,2,1},{3}))+(sk
 pleth(Q {3,1}, Q {4})
 ```
 
+8. Verify the plethysm stability of $(Q_\lambda\circ Q_{p\mu},Q_{s\nu})$, where $\lambda=(2,1)$, $\mu=(2)$, and $\nu=(4,3,2)$:
+```
+lam = {2,1}
+mu = {2}
+nu = {4,3,2}
+
+for p from 0 to 7 do (
+    s = (sum lam)*(p + sum mu) - sum nu;
+    print(decomposeQ(pleth(Q lam,Q {p,2}),doPrint => false));
+    print(select(decomposeQ(pleth(Q lam,Q {p,2}),doPrint => false),i -> i#0 == {s,4,3,2}));
+    print("\n");
+    )
+```
+
+9. Verify the plethysm stability of $(Q_{p\lambda}\circ Q_{\mu},Q_{s\nu})$ ($\ell(\mu)>1$), where $\lambda=(1)$, $\mu=(2,1)$, and $\nu=(3,2)$:
+```
+lam = {1}
+mu = {2,1}
+nu = {3,2}
+
+for p from 0 to 7 do (
+    s = (sum lam + p)*(sum mu) - sum nu;
+    print(decomposeQ(pleth(Q {p,1},Q {2,1}),doPrint => false));
+    print(select(decomposeQ(pleth(Q {p,1},Q {2,1}),doPrint => false),i -> i#0 == {s,3,2}));
+    print("\n");
+    )
+```
+
+10. Verify the plethysm non-stability of $(Q_{p\lambda}\circ Q_{\mu},Q_{s\nu})$ ($\ell(\mu)=1$), where $\lambda=(1)$, $\mu=(3)$, and $\nu=(2,1)$:
+```
+lam = {1}
+mu = {3}
+nu = {2,1}
+
+for p from 0 to 7 do (
+    s = (sum lam + p)*(sum mu) - sum nu;
+    --print(s);
+    print(decomposeQ(pleth(Q {p,1},Q mu),doPrint => false));
+    print(select(decomposeQ(pleth(Q {p,1},Q mu),doPrint => false),i -> i#0 == {s,2,1}));
+    print("\n");
+    )
+```
+
 ## Power Sum Conversions
 
 8. Write $F\in\mathbb{Q}[q_1,q_2,\ldots]$ as a polynomial in the $p_n$'s, where $F=Q_{(6,5)}+Q_{(3,1)}$:
