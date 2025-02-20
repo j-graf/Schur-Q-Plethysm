@@ -225,6 +225,55 @@ skewQ = (lam,mu) -> (
     pfaff skewM(lam,mu)
     )
 
+--decompose f into linear combination of Q_nu's
+decomposeQ = {doPrint => true} >> o -> f -> (
+    fList := fToLamList TOq f;
+    
+    ans := {};
+    currPolyn := f;
+    
+    while currPolyn != 0 do (
+        leadLam := positions((listForm leadTerm currPolyn)#0#0,i -> i>0);
+        leadLam = rsort(leadLam - toList((#leadLam):n));
+        leadCoeff := leadCoefficient currPolyn;
+        
+        basisFunction := Q leadLam;
+        basisCoeff := leadCoefficient basisFunction;
+        
+        theCoeff := (sub(leadCoeff,R))//(sub(basisCoeff,R));
+        ans = append(ans,(leadLam,theCoeff));
+        
+        currPolyn = currPolyn - theCoeff * (basisFunction);
+        );
+    
+    ans = rsort ans;
+    
+    if o.doPrint then (
+        -- prints decomposition into latex code
+        print("\n");
+        print(decompToTex(ans));
+        
+        -- prints decomposition into m2 functions
+        print("\n");
+        print(decompToM2(ans));
+        );
+    
+    ans
+    )
+
+-- returns decomp as string of LaTeX
+decompToTex = (theDecomp) -> (
+    replace("\\*","",replace("\\+$","",concatenate(for theTerm in theDecomp list (
+                        if theTerm#1 != 1 then (toString(theTerm#1)|"Q_{("|toString(theTerm#0)|")}+")
+                        else ("Q_{("|toString(theTerm#0)|")}+")
+                        ))))
+    )
+
+-- returns decomp as string of M2 code
+decompToM2 = (theDecomp) -> (
+    replace("\\+$","",concatenate(for theTerm in theDecomp list ("("|toString(theTerm#1)|")*Q("|toString(theTerm#0)|")+")))
+    )
+
 ---------- plethysm recurrence formulas
 
 --computes A.B
