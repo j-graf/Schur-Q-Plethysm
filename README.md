@@ -64,10 +64,12 @@ lam = {2,1}
 mu = {2}
 nu = {4,3,2}
 
-for p from 0 to 7 do (
-    s = (sum lam)*(p + sum mu) - sum nu;
-    print(decomposeQ(pleth(Q lam,Q({p}|mu)),doPrint => false));
-    print(decompToTex select(decomposeQ(pleth(Q lam,Q ({p}|mu)),doPrint => false),i -> i#0 == ({s}|nu)));
+for pp from -7 to 7 do (
+    s = (sum lam)*(pp + sum mu) - sum nu;
+    theDecomp = decomposeQ(pleth(Q lam,Q({pp}|mu)),doPrint => false);
+    print("p="|toString(pp));
+    print(theDecomp);
+    print(decompToTex select(theDecomp,i -> i#0 == ({s}|nu)));
     print("\n");
     )
 ```
@@ -78,10 +80,12 @@ lam = {1}
 mu = {2,1} --ell(mu)>1
 nu = {3,2}
 
-for p from 0 to 7 do (
-    s = (sum lam + p)*(sum mu) - sum nu;
-    print(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false));
-    print(decompToTex select(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false),i -> i#0 == {s}|nu));
+for pp from -7 to 7 do (
+    s = (sum lam + pp)*(sum mu) - sum nu;
+    theDecomp = decomposeQ(pleth(Q({pp}|lam),Q mu),doPrint => false);
+    print("p="|toString(pp));
+    print(theDecomp);
+    print(decompToTex select(theDecomp,i -> i#0 == {s}|nu));
     print("\n");
     )
 ```
@@ -92,10 +96,12 @@ lam = {1}
 mu = {3} --ell(mu)=1
 nu = {2,1}
 
-for p from 0 to 7 do (
-    s = (sum lam + p)*(sum mu) - sum nu;
-    print(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false));
-    print(decompToTex select(decomposeQ(pleth(Q({p}|lam),Q mu),doPrint => false),i -> i#0 == {s}|nu));
+for pp from -7 to 7 do (
+    s = (sum lam + pp)*(sum mu) - sum nu;
+    theDecomp = decomposeQ(pleth(Q({pp}|lam),Q mu),doPrint => false);
+    print("p="|toString(pp));
+    print(theDecomp);
+    print(decompToTex select(theDecomp,i -> i#0 == {s}|nu));
     print("\n");
     )
 ```
