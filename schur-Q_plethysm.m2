@@ -238,7 +238,7 @@ decomposeQ = {doPrint => true} >> o -> f -> (
         leadCoeff := leadCoefficient currPolyn;
         
         basisFunction := Q leadLam;
-        basisCoeff := leadCoefficient basisFunction;
+        basisCoeff := leadCoefficient sub(basisFunction,R);
         
         theCoeff := (sub(leadCoeff,R))//(sub(basisCoeff,R));
         ans = append(ans,(leadLam,theCoeff));
