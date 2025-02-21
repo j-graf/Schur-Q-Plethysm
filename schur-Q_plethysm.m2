@@ -1,23 +1,29 @@
--- computes plethysm of Schur's Q-functions
+-- computes plethysm of Schur's Q-functions and power sums
 -- converts between q_n and p_n bases
 -- computes plethysm recurrence from [GJ24b]
 
 restart
-n = 30 --at most ~30
-R = QQ[q_(-n)..q_n]--/(ideal(join({q_0-1},for k from -n to -1 list q_k)))
-S = QQ[p_(-n)..p_n]/(ideal(join({p_0-1},for k from -n to -1 list p_k)))
+largestIndex = 30 --at most ~30
+R = QQ[q_(-largestIndex)..q_largestIndex]
+S = QQ[p_(-largestIndex)..p_largestIndex]/(ideal(join({p_0-1},for k from -largestIndex to -1 list p_k)))
 
 --mod out by relations from 8.2' [Macdonald p.251]
-R = R/ideal(join(for m from 1 to n//2 list (-q_(2*m)+(1/2)*(-1)^(m-1)*q_m^2 + sum for r from 1 to (m-1) list (-1)^(r-1)*q_r*q_(2*m-r)),{q_0-1},for i from (-n) to (-1) list q_i))
+R = R/ideal(join(for m from 1 to largestIndex//2 list (-q_(2*m)+(1/2)*(-1)^(m-1)*q_m^2 + sum for r from 1 to (m-1) list (-1)^(r-1)*q_r*q_(2*m-r)),{q_0-1},for i from (-largestIndex) to (-1) list q_i))
+
+protect symbol q
+protect symbol p
+protect symbol R
+protect symbol S
+protect symbol largestIndex
 
 ---------- conversions between p_i's and q_i's
 
 --list of odd partitions of numbers 0..m
 oddPartitionList = (
     ans := {{{}}};
-    oddNums := for i from 0 to (n-1)//2 list (2*i+1);
+    oddNums := for i from 0 to (largestIndex-1)//2 list (2*i+1);
     
-    for k from 1 to n do (
+    for k from 1 to largestIndex do (
         currOddNums := for i from 0 to (k-1)//2 list oddNums#i;
         currPartitions := {};
         
@@ -51,16 +57,16 @@ zlam = lam -> (
     )
 
 --list used for writing q_m in p_k basis [Macdonald p.260]
-qTOpList = Bag for m from 0 to n list (sum for lam in oddPartitionList#m list (zlam lam)^(-1)*2^(#lam)*(plam lam))
+qTOpList = Bag for m from 0 to largestIndex list (sum for lam in oddPartitionList#m list (zlam lam)^(-1)*2^(#lam)*(plam lam))
 
 --maps q_i -> p_j's
-qTOpMap = map(S,R,toList(n:0)|toList(qTOpList));
+qTOpMap = map(S,R,toList(largestIndex:0)|toList(qTOpList));
 
 --list used for writing p_m in q_k basis [Macdonald p.260]
 pTOqList = (
     ans := {1};
     
-    for m from 1 to n do (
+    for m from 1 to largestIndex do (
         pm := 0;
         if odd m then (
             pm = (zlam({m})/2)*(q_m - sum for lam in delete({m},oddPartitionList#m) list 
@@ -73,7 +79,7 @@ pTOqList = (
     )
 
 --maps p_i -> q_j's
-pTOqMap = map(R,S,toList(n:0)|toList(pTOqList));
+pTOqMap = map(R,S,toList(largestIndex:0)|toList(pTOqList));
 
 --maps any f -> q_i's
 TOq = f -> (
@@ -100,7 +106,7 @@ pmEven = f -> (
         newAns := {};
         for i from 0 to #termList-1 do (
             for j from 1 to termList#i do (
-                newAns = append(newAns,i-n);
+                newAns = append(newAns,i-largestIndex);
                 );
             );
         newAns
@@ -124,7 +130,7 @@ fToLamList = polyn -> (
         newAns := {};
         for i from 0 to #termList-1 do (
             for j from 1 to termList#i do (
-                newAns = append(newAns,i-n);
+                newAns = append(newAns,i-largestIndex);
                 );
             );
         newAns
@@ -149,7 +155,7 @@ pleth = (f,g) -> (
     fMaxWeight := max for fTerm in fList list sum fTerm#0;
     gMaxWeight := max for gTerm in gList list sum gTerm#0;
     
-    if gMaxWeight*fMaxWeight > n then print("plethysm warning: weight might be too high");
+    if gMaxWeight*fMaxWeight > largestIndex then print("plethysm warning: weight might be too high");
     
     ans := sum for fTerm in fList list ((fTerm#1)*(
             product for i from 0 to #fTerm#0-1 list (
@@ -159,6 +165,46 @@ pleth = (f,g) -> (
     
     if fInS or gInS then return(ans);
     TOq ans
+    )
+
+-- decomposes Q_{lam/mu} as a linear combination of Q_nu
+decomposeSkew = {doPrint => true} >> o -> (lam,mu) -> (
+    if lam == rsort lam and lam#-1 >= 0 and lam == mu then return(sub(1,S));
+    
+    ans := {};
+    numVars := #lam;
+    currPolyn := skewQ(lam,mu,numVars);
+    
+    while currPolyn != 0 do (
+        leadPart := delete(0,(listForm leadTerm currPolyn)#0#0);
+        leadCoeff := leadCoefficient currPolyn;
+        
+        basisFunction := Qlam(leadPart,numVars);
+        basisCoeff := leadCoefficient basisFunction;
+        
+        theCoeff := (sub(leadCoeff,R))//(sub(basisCoeff,R));
+        ans = append(ans,(leadPart,theCoeff));
+        
+        currPolyn = currPolyn - theCoeff * (basisFunction);
+        );
+    
+    ans = rsort ans;
+    
+    if o.doPrint then (
+        -- prints decomposition into latex code
+        print("\n");
+        print(concatenate("Q_{("|toString(lam)|")/("|toString(mu)|")}&=",decompToTex(ans)));
+        
+        -- prints decomposition into m2 functions
+        print("\n");
+        print(decompToM2(ans));
+        
+        if #lam <= 3 then (
+            return(decompToPretty(ans));
+            );
+        );
+    
+    ans
     )
 
 ---------- Pfaffian definition of Schur's Q-functions
@@ -234,7 +280,7 @@ decomposeQ = {doPrint => true} >> o -> f -> (
     
     while currPolyn != 0 do (
         leadLam := positions((listForm leadTerm currPolyn)#0#0,i -> i>0);
-        leadLam = rsort(leadLam - toList((#leadLam):n));
+        leadLam = rsort(leadLam - toList((#leadLam):largestIndex));
         leadCoeff := leadCoefficient currPolyn;
         
         basisFunction := Q leadLam;
