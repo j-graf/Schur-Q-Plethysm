@@ -51,30 +51,39 @@ Q {-2,5,2}
 Q {5,3,1} == (q_2*q_1-q_3)*(skewQ({5,3,2,1},{5}))-q_1*(skewQ({5,3,2,1},{3}))+(skewQ({5,3,2,1},{2}))
 ```
 
+7. Compute the inner product $(F,G)$, where $F=Q_{(5,3,2)/(2,1)}+Q_{(5,2)}$ and $G=(5,2,1)/(1)$:
+```
+F = skewQ({5,3,2},{2,1}) + Q {5,2}
+G = skewQ({5,2,1},{1})
+innerProd(F,G)
+```
+
 ## Plethysm Computations
 
-7. Compute the plethysm $F\circ G$ for $F,G\in\mathbb{Q}[q_1,q_2,\ldots]$, where $F=Q_{(3,1)}$ and $G=q_4$:
+8. Compute the plethysm $F\circ G$ for $F,G\in\mathbb{Q}[q_1,q_2,\ldots]$, where $F=Q_{(3,1)}$ and $G=q_4$:
 ```
 pleth(Q {3,1}, Q {4})
 ```
 
-8. Verify the plethysm stability of $(Q_\lambda\circ Q_{p\mu},Q_{s\nu})$, where $\lambda=(2,1)$, $\mu=(2)$, and $\nu=(4,3,2)$:
+9. Verify the plethysm stability of $(Q_\lambda\circ Q_{p\mu},Q_{s\nu})$, where $\lambda=(2,1)$, $\mu=(2)$, and $\nu=(4,3,2)$:
 ```
 lam = {2,1}
 mu = {2}
 nu = {4,3,2}
 
 for pp from -7 to 7 do (
+    thePleth = pleth(Q lam,Q({pp}|mu));
     s = (sum lam)*(pp + sum mu) - sum nu;
-    theDecomp = decomposeQ(pleth(Q lam,Q({pp}|mu)),doPrint => false);
+    theDecomp = decomposeQ(thePleth,doPrint => false);
     print("p="|toString(pp));
-    print(theDecomp);
-    print(decompToTex select(theDecomp,i -> i#0 == ({s}|nu)));
+    print("Q_{("|toString(lam)|")}\\circ Q_{("|toString({pp}|mu)|")}="|decompToTex(theDecomp));
+    print("Q_{(s)nu} term: "|(decompToTex select(theDecomp,i -> i#0 == ({s}|nu))));
+    print("(Q_{("|toString(lam)|")}\\circ Q_{("|toString({pp}|mu)|")}, Q_{("|toString({s}|nu)|")})="|toString(innerProd(thePleth,Q({s}|nu))));
     print("\n");
     )
 ```
 
-9. Verify the plethysm stability of $(Q_{p\lambda}\circ Q_{\mu},Q_{s\nu})$ ($\ell(\mu)>1$), where $\lambda=(1)$, $\mu=(2,1)$, and $\nu=(3,2)$:
+10. Verify the plethysm stability of $(Q_{p\lambda}\circ Q_{\mu},Q_{s\nu})$ ($\ell(\mu)>1$), where $\lambda=(1)$, $\mu=(2,1)$, and $\nu=(3,2)$:
 ```
 lam = {1}
 mu = {2,1} --ell(mu)>1
@@ -90,7 +99,7 @@ for pp from -7 to 7 do (
     )
 ```
 
-10. Verify the plethysm non-stability of $(Q_{p\lambda}\circ Q_{\mu},Q_{s\nu})$ ($\ell(\mu)=1$), where $\lambda=(1)$, $\mu=(3)$, and $\nu=(2,1)$:
+11. Verify the plethysm non-stability of $(Q_{p\lambda}\circ Q_{\mu},Q_{s\nu})$ ($\ell(\mu)=1$), where $\lambda=(1)$, $\mu=(3)$, and $\nu=(2,1)$:
 ```
 lam = {1}
 mu = {3} --ell(mu)=1
@@ -108,12 +117,12 @@ for pp from -7 to 7 do (
 
 ## Power Sum Conversions
 
-11. Write $F\in\mathbb{Q}[q_1,q_2,\ldots]$ as a polynomial in the $p_n$'s, where $F=Q_{(6,5)}+Q_{(3,1)}$:
+12. Write $F\in\mathbb{Q}[q_1,q_2,\ldots]$ as a polynomial in the $p_n$'s, where $F=Q_{(6,5)}+Q_{(3,1)}$:
 ```
 TOp(Q {6,5} + Q {3,1})
 ```
 
-12. Write $F\in\mathbb{Q}[p_1,p_2,\ldots]$ as a polynomial in the $q_n$'s, where $F=p_1p_3^2$:
+13. Write $F\in\mathbb{Q}[p_1,p_2,\ldots]$ as a polynomial in the $q_n$'s, where $F=p_1p_3^2$:
 ```
 TOq(p_1*p_3^2)
 ```
