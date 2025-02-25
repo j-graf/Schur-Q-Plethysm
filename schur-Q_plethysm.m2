@@ -207,6 +207,23 @@ decomposeSkew = {doPrint => true} >> o -> (lam,mu) -> (
     ans
     )
 
+-- computes the inner product (F,G)
+innerProd = (F,G) -> (
+    decompF := decomposeQ(F,doPrint => false);
+    decompG := decomposeQ(G,doPrint => false);
+    
+    ans := 0;
+    
+    for termF in decompF do (
+        theInd := positions(decompG,i -> i#0 == termF#0);
+        if #theInd > 0 then (
+            ans = ans + (termF#1)*(decompG#(theInd#0)#1)*2^(#(termF#0));
+            );
+        );
+    
+    ans
+    )
+
 ---------- Pfaffian definition of Schur's Q-functions
 
 --appends 0's to the end of lam
