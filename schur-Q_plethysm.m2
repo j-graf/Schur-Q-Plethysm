@@ -326,6 +326,7 @@ decomposeQ = {doPrint => true} >> o -> f -> (
 
 -- returns decomp as string of LaTeX
 decompToTex = (theDecomp) -> (
+    if theDecomp == {} then return (toString(0));
     replace("\\*","",replace("\\+$","",concatenate(for theTerm in theDecomp list (
                         if theTerm#1 != 1 then (toString(theTerm#1)|"Q_{("|toString(theTerm#0)|")}+")
                         else ("Q_{("|toString(theTerm#0)|")}+")
