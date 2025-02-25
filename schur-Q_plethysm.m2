@@ -328,7 +328,8 @@ decomposeQ = {doPrint => true} >> o -> f -> (
 decompToTex = (theDecomp) -> (
     if theDecomp == {} then return (toString(0));
     replace("\\*","",replace("\\+$","",concatenate(for theTerm in theDecomp list (
-                        if theTerm#1 != 1 then (toString(theTerm#1)|"Q_{("|toString(theTerm#0)|")}+")
+                    if theTerm#0 == {} then (toString(theTerm#1)|"+")
+                        else if theTerm#1 != 1 then (toString(theTerm#1)|"Q_{("|toString(theTerm#0)|")}+")
                         else ("Q_{("|toString(theTerm#0)|")}+")
                         ))))
     )
