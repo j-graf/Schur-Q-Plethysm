@@ -339,7 +339,7 @@ decompToM2 = (theDecomp) -> (
     replace("\\+$","",concatenate(for theTerm in theDecomp list ("("|toString(theTerm#1)|")*Q("|toString(theTerm#0)|")+")))
     )
 
----------- plethysm recurrence formulas
+---------- Plethysm recurrence formulas
 
 --computes A.B
 dotProd = (A,B) -> (
@@ -364,26 +364,15 @@ seqAdd = (seq,theMax) -> (
 
 --computes list of I,J for BK formula
 IJlist = (k,n,m) -> (
-    del := (1..m);
-    ones := m:1;
-    curr := (2*m):0;
-    
     ans := {(toList(m:0),toList(m:0))};
     
+    curr := (2*m):0;
     while true do (
         curr = seqAdd(curr,n);
         if curr == (2*m):0 then break;
-        --print(curr);
         I := toList take(curr,{0,m-1});
         J := toList take(curr,{m,2*m-1});
-        wt := (dotProd(I+J,del)-k) + m*(n-(sum I)-(sum J));
-        for s from 0 to m-1 do (
-            wt = wt + (I#s)*(m-s-1)+(J#s)*(m-s-1);
-            );
-        --print(wt);
-        if (wt == n*m-k) then (
-            ans = append(ans, (I,J));
-            );
+        ans = append(ans, (I,J));
         );
     
     ans
@@ -393,18 +382,10 @@ IJlist = (k,n,m) -> (
 BKformula = (k,n,m) -> (
     indexList := IJlist(k,n,m);
     del := (1..m);
-    ones := m:1;
     
     sum for theInd in indexList list (
         I := toList theInd#0;
         J := toList theInd#1;
-        wt := sum {dotProd(I+J,del)-k,m*(n-(sum I)-(sum J))};
-        for s from 0 to m-1 do (
-            wt = wt + (I#s)*(m-s)+(J#s)*(m-s);
-            );
-        for s from 0 to m-1 do (
-            --print(wt);
-            );
         
         (-1)^(dotProd(I+J,del)-k)*q_(dotProd(I+J,del)-k)*pleth(
             q_(n-(sum I)-(sum J)),q_m)*product for s from 0 to m-1 list (
@@ -420,7 +401,6 @@ Dk = (k,F) -> (
     ansDecomp := {};
     
     for theTerm in theDecomp do (
-        --print(theTerm);
         if any(theTerm#0,i -> i == k) then (
             ansDecomp = append(ansDecomp,(delete(k,theTerm#0),(-1)^(position(theTerm#0,i -> i == k))*2*theTerm#1))
             );
