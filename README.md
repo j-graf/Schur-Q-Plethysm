@@ -127,7 +127,7 @@ m = 2;
 Dk(k,pleth(q_n,q_m)) == BKformula(k,n,m)
 ```
 
-13. Verify the formula $D_{n\cdot\lambda_1}(q_n\circ Q_\lambda)=q_n\circ (2Q_{\lambda/(\lambda_1)})$, where $n=3$ and $\lambda=(5,3,2)$:
+13. Verify the formula $D_{n\lambda_1}(q_n\circ Q_\lambda)=q_n\circ (2Q_{\lambda/(\lambda_1)})$, where $n=3$ and $\lambda=(5,3,2)$:
 ```
 n = 3;
 lam = {5,3,2};
