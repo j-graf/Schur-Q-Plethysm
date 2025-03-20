@@ -119,8 +119,6 @@ for pp from -7 to 7 do (
     )
 ```
 
-## Butler-King Formula
-
 12. Verify the Butler-King analogue for $D_k(q_n\circ q_m)$, where $k=1$, $n=3$, and $m=2$:
 ```
 k = 1;
@@ -129,14 +127,22 @@ m = 2;
 Dk(k,pleth(q_n,q_m)) == BKformula(k,n,m)
 ```
 
+13. Verify the formula $D_{n\cdot\lambda_1}(q_n\circ Q_\lambda)=q_n\circ (2Q_{\lambda/(\lambda_1)})$, where $n=3$ and $\lambda=(5,3,2)$:
+```
+n = 3;
+lam = {5,3,2};
+
+Dk(n*(lam#0),pleth(q_n,Q lam)) == pleth(q_n,2*skewQ(lam,{lam#0}))
+```
+
 ## Power Sum Conversions
 
-13. Write $F\in\mathbb{Q}[q_1,q_2,\ldots]$ as a polynomial in the $p_n$'s, where $F=Q_{(6,5)}+Q_{(3,1)}$:
+14. Write $F\in\mathbb{Q}[q_1,q_2,\ldots]$ as a polynomial in the $p_n$'s, where $F=Q_{(6,5)}+Q_{(3,1)}$:
 ```
 TOp(Q {6,5} + Q {3,1})
 ```
 
-14. Write $F\in\mathbb{Q}[p_1,p_2,\ldots]$ as a polynomial in the $q_n$'s, where $F=p_1p_3^2$:
+15. Write $F\in\mathbb{Q}[p_1,p_2,\ldots]$ as a polynomial in the $q_n$'s, where $F=p_1p_3^2$:
 ```
 TOq(p_1*p_3^2)
 ```
