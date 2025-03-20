@@ -362,29 +362,69 @@ seqAdd = (seq,theMax) -> (
         )
     )
 
---lists all indices J needed for BK formula
-Jlist = (k,n,m) -> (
-    -- J.d-k >= 0
-    -- n-|J| >= 0
-    ans := {};
+--computes list of I,J for BK formula
+IJlist = (k,n,m) -> (
     del := (1..m);
-    ones := toSequence for i from 0 to m-1 list 1;
-    curr := toSequence for i from 0 to m-1 list 0;
-    for i from 1 to (n+1)^m-1 list (
+    ones := m:1;
+    curr := (2*m):0;
+    
+    ans := {(toList(m:0),toList(m:0))};
+    
+    while true do (
         curr = seqAdd(curr,n);
-        if (dotProd(curr,del) < k) or (dotProd(curr,ones) > n) then continue;
-        curr
+        if curr == (2*m):0 then break;
+        --print(curr);
+        I := toList take(curr,{0,m-1});
+        J := toList take(curr,{m,2*m-1});
+        wt := (dotProd(I+J,del)-k) + m*(n-(sum I)-(sum J));
+        for s from 0 to m-1 do (
+            wt = wt + (I#s)*(m-s-1)+(J#s)*(m-s-1);
+            );
+        --print(wt);
+        if (wt == n*m-k) then (
+            ans = append(ans, (I,J));
+            );
+        );
+    
+    ans
+    )
+
+--computes RHS of D_k(q_n(q_m)) formula
+BKformula = (k,n,m) -> (
+    indexList := IJlist(k,n,m);
+    del := (1..m);
+    ones := m:1;
+    
+    sum for theInd in indexList list (
+        I := toList theInd#0;
+        J := toList theInd#1;
+        wt := sum {dotProd(I+J,del)-k,m*(n-(sum I)-(sum J))};
+        for s from 0 to m-1 do (
+            wt = wt + (I#s)*(m-s)+(J#s)*(m-s);
+            );
+        for s from 0 to m-1 do (
+            --print(wt);
+            );
+        
+        (-1)^(dotProd(I+J,del)-k)*q_(dotProd(I+J,del)-k)*pleth(
+            q_(n-(sum I)-(sum J)),q_m)*product for s from 0 to m-1 list (
+            pleth(q_(I#s),q_(m-s-1))*pleth(q_(J#s),q_(m-s-1))
+            )
         )
     )
 
---computes D_k(q_n(q_m))
-BK = (k,n,m) -> (
-    indexList := Jlist(k,n,m);
-    del := (1..m);
-    ones := toSequence for i from 0 to m-1 list 1;
+--computes D_k(F)
+Dk = (k,F) -> (
+    theDecomp := decomposeQ(F,doPrint => false);
     
-    sum for J in indexList list (
-        (-1)^(dotProd(J,del)-k)*q_(dotProd(J,del)-k)*(pleth(q_(n-dotProd(J,ones)),q_m))*
-        product for s from 1 to m list pleth(q_(J#(s-1)),q_(m-s))
-        )
+    ansDecomp := {};
+    
+    for theTerm in theDecomp do (
+        --print(theTerm);
+        if any(theTerm#0,i -> i == k) then (
+            ansDecomp = append(ansDecomp,(delete(k,theTerm#0),(-1)^(position(theTerm#0,i -> i == k))*2*theTerm#1))
+            );
+        );
+    
+    sum for theTerm in ansDecomp list ((theTerm#1)*Q(theTerm#0))
     )
